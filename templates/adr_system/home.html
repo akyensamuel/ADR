@@ -3,8 +3,82 @@
 {% block title %}ADR System Home{% endblock %}
 
 {% block content %}
-<div class="p-5 bg-white rounded shadow-sm">
-  <h1 class="display-6">Adverse Drug Reaction Detection</h1>
-  <p class="lead mb-0">Project scaffold is ready. Next steps are loading drug data, building the DDI checker, and wiring symptom extraction.</p>
+<div class="row g-4">
+  <div class="col-12">
+    <div class="p-5 bg-white rounded shadow-sm">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+        <div>
+          <h1 class="display-6 mb-2">Adverse Drug Reaction Detection</h1>
+          <p class="lead mb-0">Check known interactions and get safer alternatives from the current drug catalog.</p>
+        </div>
+        <div class="text-lg-end text-muted">
+          <div class="fw-semibold">Active drugs</div>
+          <div>{{ active_drugs|length }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h4 mb-3">Interaction Check</h2>
+      <form method="get" class="vstack gap-3">
+        {{ interaction_form.non_field_errors }}
+        <div>
+          {{ interaction_form.source_drug_name.label_tag }}
+          {{ interaction_form.source_drug_name }}
+          {{ interaction_form.source_drug_name.errors }}
+        </div>
+        <div>
+          {{ interaction_form.target_drug_name.label_tag }}
+          {{ interaction_form.target_drug_name }}
+          {{ interaction_form.target_drug_name.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Check interaction</button>
+      </form>
+
+      {% if interaction_result is not None %}
+      <div class="alert {% if interaction_result.is_risky %}alert-danger{% else %}alert-success{% endif %} mt-4 mb-0">
+        <div class="fw-semibold">
+          {% if interaction_result.is_risky %}Known interaction detected{% else %}No known interaction{% endif %}
+        </div>
+        <div class="small">{{ interaction_result.description }}</div>
+        {% if interaction_result.severity %}
+        <div class="small text-uppercase mt-2">Severity: {{ interaction_result.severity }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h4 mb-3">Safer Alternatives</h2>
+      <form method="get" class="vstack gap-3">
+        {{ recommendation_form.non_field_errors }}
+        <div>
+          {{ recommendation_form.drug_name.label_tag }}
+          {{ recommendation_form.drug_name }}
+          {{ recommendation_form.drug_name.errors }}
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Find alternatives</button>
+      </form>
+
+      {% if recommendations is not None %}
+      <div class="mt-4">
+        <h3 class="h6 text-uppercase text-muted">Recommendations</h3>
+        {% if recommendations %}
+        <ul class="list-group">
+          {% for name in recommendations %}
+          <li class="list-group-item">{{ name }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="alert alert-warning mb-0">No alternatives found for that drug.</div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
