@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'drugs',
+    'meddra',
     'patients',
     'detection',
     'recommender',
