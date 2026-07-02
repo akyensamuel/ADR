@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}MedDRA Browser{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow-sm p-4 mb-4">
+  <h1 class="h3 mb-2">MedDRA Browser</h1>
+  <p class="text-muted mb-0">Search PT/LT standardized terminology used by the NLP pipeline.</p>
+  <div class="mt-2 text-muted small">Loaded terms: {{ term_count }}</div>
+  <form method="get" class="row g-2 mt-3">
+    <div class="col-12 col-md-6">
+      <input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Search term name">
+    </div>
+    <div class="col-12 col-md-3">
+      <select name="term_type" class="form-select">
+        <option value="">All term types</option>
+        <option value="PT" {% if term_type == 'PT' %}selected{% endif %}>PT</option>
+        <option value="LT" {% if term_type == 'LT' %}selected{% endif %}>LT</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-3">
+      <button class="btn btn-primary w-100" type="submit">Search</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-responsive bg-white rounded shadow-sm">
+  <table class="table table-striped mb-0 align-middle">
+    <thead>
+      <tr>
+        <th>Term</th>
+        <th>Type</th>
+        <th>MedDRA ID</th>
+        <th>Concept Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for term in terms %}
+      <tr>
+        <td><a href="{% url 'meddra-term-detail' term.pk %}">{{ term.term_name }}</a></td>
+        <td>{{ term.term_type }}</td>
+        <td>{{ term.meddra_id }}</td>
+        <td>{{ term.meddra_concept_code }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center text-muted py-4">No MedDRA terms matched your search.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

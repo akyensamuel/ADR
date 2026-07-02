@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ record.patient_id }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow-sm p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div>
+      <h1 class="h3 mb-2">Patient {{ record.patient_id }}</h1>
+      <div class="text-muted">Diagnosis: {{ record.diagnosis }}</div>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="/patients/">Back to records</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-6">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h5 mb-3">Demographics</h2>
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Age</dt><dd class="col-sm-8">{{ record.age }}</dd>
+        <dt class="col-sm-4">Gender</dt><dd class="col-sm-8">{{ record.gender }}</dd>
+        <dt class="col-sm-4">Weight</dt><dd class="col-sm-8">{{ record.weight_kg }} kg</dd>
+        <dt class="col-sm-4">Height</dt><dd class="col-sm-8">{{ record.height_cm }} cm</dd>
+        <dt class="col-sm-4">BMI</dt><dd class="col-sm-8">{{ record.bmi }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h5 mb-3">Case Details</h2>
+      <p class="mb-2"><strong>Chronic conditions:</strong> {{ record.chronic_conditions|default:'-' }}</p>
+      <p class="mb-2"><strong>Drug allergies:</strong> {{ record.drug_allergies|default:'-' }}</p>
+      <p class="mb-2"><strong>Genetic disorders:</strong> {{ record.genetic_disorders|default:'-' }}</p>
+      <p class="mb-2"><strong>Symptoms:</strong> {{ record.symptoms|default:'-' }}</p>
+      <p class="mb-2"><strong>Recommended medication:</strong> {{ record.recommended_medication|default:'-' }}</p>
+      <p class="mb-2"><strong>Dosage:</strong> {{ record.dosage|default:'-' }}</p>
+      <p class="mb-2"><strong>Duration:</strong> {{ record.duration|default:'-' }}</p>
+      <p class="mb-2"><strong>Treatment effectiveness:</strong> {{ record.treatment_effectiveness|default:'-' }}</p>
+      <p class="mb-2"><strong>Adverse reactions:</strong> {{ record.adverse_reactions|default:'-' }}</p>
+      <p class="mb-0"><strong>Recovery time days:</strong> {{ record.recovery_time_days|default:'-' }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

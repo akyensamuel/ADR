@@ -3,6 +3,8 @@ from django.shortcuts import render
 from adr_system.forms import InteractionCheckForm, RecommendationForm
 from detection.services.ddi_checker import check_pair
 from drugs.models import Drug
+from meddra.models import MedDraTerm
+from patients.models import PatientMedicationRecord
 from recommender.services import recommend_safer_alternatives
 
 
@@ -31,5 +33,7 @@ def home(request):
         'interaction_result': interaction_result,
         'recommendations': recommendations,
         'active_drugs': Drug.objects.filter(is_active=True).order_by('name'),
+        'patient_record_count': PatientMedicationRecord.objects.count(),
+        'meddra_term_count': MedDraTerm.objects.count(),
     }
     return render(request, 'adr_system/home.html', context)

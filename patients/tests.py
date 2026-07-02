@@ -85,3 +85,34 @@ class PersonalizedMedicationDatasetImportTests(TestCase):
         self.assertIn('1 created, 0 updated', out.getvalue())
 
         self.assertTrue(record.source_filename.endswith('csv'))
+
+
+class PatientRecordsViewTests(TestCase):
+    def test_patient_list_and_detail_render(self):
+        record = PatientMedicationRecord.objects.create(
+            patient_id='P0002',
+            age=57,
+            gender='Female',
+            weight_kg='90.5',
+            height_cm='195.6',
+            bmi='30.2',
+            chronic_conditions='Hypertension',
+            drug_allergies='None',
+            genetic_disorders='None',
+            diagnosis='Depression',
+            symptoms='Fatigue, Headache, Dizziness',
+            recommended_medication='Amoxicillin',
+            dosage='5 mg',
+            duration='None',
+            treatment_effectiveness='Neutral',
+            adverse_reactions='No',
+            recovery_time_days=24,
+        )
+
+        response = self.client.get('/patients/')
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response, record.patient_id)
+
+        detail = self.client.get(f'/patients/{record.patient_id}/')
+        self.assertEqual(200, detail.status_code)
+        self.assertContains(detail, record.diagnosis)

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ term.term_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow-sm p-4">
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div>
+      <h1 class="h3 mb-2">{{ term.term_name }}</h1>
+      <div class="text-muted">Standardized MedDRA term used by the NLP extractor</div>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="/meddra/">Back to search</a>
+  </div>
+
+  <hr>
+
+  <dl class="row mb-0">
+    <dt class="col-sm-3">Term type</dt><dd class="col-sm-9">{{ term.term_type }}</dd>
+    <dt class="col-sm-3">MedDRA ID</dt><dd class="col-sm-9">{{ term.meddra_id }}</dd>
+    <dt class="col-sm-3">Concept code</dt><dd class="col-sm-9">{{ term.meddra_concept_code }}</dd>
+    <dt class="col-sm-3">Normalized name</dt><dd class="col-sm-9">{{ term.normalized_name }}</dd>
+  </dl>
+</div>
+{% endblock %}

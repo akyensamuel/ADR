@@ -14,6 +14,42 @@
         <div class="text-lg-end text-muted">
           <div class="fw-semibold">Active drugs</div>
           <div>{{ active_drugs|length }}</div>
+          <div class="fw-semibold mt-2">Patient records</div>
+          <div>{{ patient_record_count }}</div>
+          <div class="fw-semibold mt-2">MedDRA terms</div>
+          <div>{{ meddra_term_count }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h2 class="h5 card-title">Drug Catalog</h2>
+            <p class="card-text text-muted">Browse loaded drugs, adverse reactions, and interaction links.</p>
+            <a class="btn btn-sm btn-outline-primary" href="/drugs/">Open catalog</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h2 class="h5 card-title">Patient Records</h2>
+            <p class="card-text text-muted">Review imported personalized medication cases from the Kaggle dataset.</p>
+            <a class="btn btn-sm btn-outline-primary" href="/patients/">Open records</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h2 class="h5 card-title">MedDRA Browser</h2>
+            <p class="card-text text-muted">Search standardized symptom and adverse event terminology.</p>
+            <a class="btn btn-sm btn-outline-primary" href="/meddra/">Open browser</a>
+          </div>
         </div>
       </div>
     </div>

@@ -22,5 +22,7 @@ from .views import home
 urlpatterns = [
     path('', home, name='home'),
     path('drugs/', include('drugs.urls')),
+    path('patients/', include('patients.urls')),
+    path('meddra/', include('meddra.urls')),
     path('admin/', admin.site.urls),
 ]

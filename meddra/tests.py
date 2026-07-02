@@ -27,3 +27,22 @@ class MedDraImportTests(TestCase):
 
         self.assertEqual(2, MedDraTerm.objects.count())
         self.assertTrue(MedDraTerm.objects.filter(term_name='Acute abdomen', term_type='PT').exists())
+
+
+class MedDraBrowserViewTests(TestCase):
+    def test_search_and_detail_render(self):
+        term = MedDraTerm.objects.create(
+            meddra_concept_code='C0004057',
+            term_type='PT',
+            meddra_id='10028813',
+            term_name='Nausea',
+            normalized_name='nausea',
+        )
+
+        response = self.client.get('/meddra/?q=nausea')
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response, 'Nausea')
+
+        detail = self.client.get(f'/meddra/{term.pk}/')
+        self.assertEqual(200, detail.status_code)
+        self.assertContains(detail, '10028813')
