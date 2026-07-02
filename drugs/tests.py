@@ -5,8 +5,39 @@ from tempfile import NamedTemporaryFile
 
 from django.core.management import call_command
 from django.test import TestCase
+from django.urls import reverse
 
 from drugs.models import AdverseReaction, Drug, DrugInteraction
+
+
+class DrugCatalogViewTests(TestCase):
+	def test_drug_list_shows_active_drugs(self):
+		active = Drug.objects.create(name='Aspirin', description='Pain relief')
+		Drug.objects.create(name='Inactive', is_active=False)
+
+		response = self.client.get(reverse('drug-list'))
+
+		self.assertEqual(200, response.status_code)
+		self.assertContains(response, active.name)
+		self.assertNotContains(response, 'Inactive')
+
+	def test_drug_detail_shows_related_data(self):
+		source = Drug.objects.create(name='Drug A', description='Source')
+		target = Drug.objects.create(name='Drug B', description='Target')
+		AdverseReaction.objects.create(drug=source, name='Nausea', severity='mild')
+		DrugInteraction.objects.create(
+			source_drug=source,
+			target_drug=target,
+			severity='high',
+			description='Avoid together',
+		)
+
+		response = self.client.get(reverse('drug-detail', args=[source.pk]))
+
+		self.assertEqual(200, response.status_code)
+		self.assertContains(response, 'Nausea')
+		self.assertContains(response, 'Avoid together')
+		self.assertContains(response, target.name)
 
 
 class ImportDrugCsvCommandTests(TestCase):
