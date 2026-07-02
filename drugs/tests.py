@@ -136,3 +136,49 @@ class ImportDrugCsvCommandTests(TestCase):
 		interaction = DrugInteraction.objects.get(source_drug__name='Drug A', target_drug__name='Drug B')
 		self.assertEqual('high', interaction.severity)
 		self.assertEqual('test', interaction.evidence_source)
+
+	def test_import_drugbank_csv_supports_alias_columns(self):
+		path = self._write_csv(
+			['drug_name', 'rxnorm', 'atc', 'maker', 'summary', 'status'],
+			[
+				{
+					'drug_name': 'Lisinopril',
+					'rxnorm': '29046',
+					'atc': 'C09AA03',
+					'maker': 'Demo Pharma',
+					'summary': 'ACE inhibitor',
+					'status': 'approved',
+				}
+			],
+		)
+
+		call_command('import_drugbank_csv', kind='drug', path=path, stdout=StringIO())
+
+		lisinopril = Drug.objects.get(name='Lisinopril')
+		self.assertEqual('29046', lisinopril.rxnorm_code)
+		self.assertEqual('C09AA03', lisinopril.atc_code)
+		self.assertEqual('Demo Pharma', lisinopril.manufacturer)
+		self.assertEqual('ACE inhibitor', lisinopril.description)
+		self.assertTrue(lisinopril.is_active)
+
+	def test_import_sider_csv_supports_side_effect_aliases(self):
+		Drug.objects.create(name='Metformin')
+		path = self._write_csv(
+			['drug', 'side_effect_name', 'meddra_id', 'frequency', 'notes'],
+			[
+				{
+					'drug': 'Metformin',
+					'side_effect_name': 'Diarrhea',
+					'meddra_id': '10012757',
+					'frequency': 'common',
+					'notes': 'Expected gastrointestinal effect',
+				}
+			],
+		)
+
+		call_command('import_sider_csv', path=path, stdout=StringIO())
+
+		reaction = AdverseReaction.objects.get(drug__name='Metformin', name='Diarrhea')
+		self.assertEqual('10012757', reaction.meddra_code)
+		self.assertEqual('common', reaction.severity)
+		self.assertEqual('Expected gastrointestinal effect', reaction.description)

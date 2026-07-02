@@ -3,18 +3,18 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 
-from drugs.importers import import_drugbank_drugs, import_drugbank_interactions, import_sider_reactions
+from drugs.importers import import_drugbank_drugs, import_drugbank_interactions
 
 
 class Command(BaseCommand):
-    help = 'Import drug-related CSV data into the database using DrugBank-style columns.'
+    help = 'Import DrugBank-style CSV data into the database.'
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--kind',
-            choices=('drug', 'reaction', 'interaction'),
+            choices=('drug', 'interaction'),
             required=True,
-            help='Type of CSV data to import.',
+            help='Type of DrugBank CSV data to import.',
         )
         parser.add_argument(
             '--path',
@@ -31,14 +31,11 @@ class Command(BaseCommand):
 
         with csv_path.open('r', encoding='utf-8-sig', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
-
             if kind == 'drug':
                 created, updated = import_drugbank_drugs(reader)
-            elif kind == 'reaction':
-                created, updated = import_sider_reactions(reader)
             else:
                 created, updated = import_drugbank_interactions(reader)
 
         self.stdout.write(self.style.SUCCESS(
-            f'Imported {kind} data from {csv_path}: {created} created, {updated} updated.'
+            f'Imported DrugBank {kind} data from {csv_path}: {created} created, {updated} updated.'
         ))
