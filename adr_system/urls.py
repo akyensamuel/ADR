@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import home
+from .views import home, import_data
 
 urlpatterns = [
     path('', home, name='home'),
+    path('import/', import_data, name='import-data'),
     path('drugs/', include('drugs.urls')),
     path('patients/', include('patients.urls')),
     path('meddra/', include('meddra.urls')),

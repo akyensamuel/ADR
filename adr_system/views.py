@@ -1,10 +1,18 @@
-from django.shortcuts import render
+import csv
+import io
+from tempfile import NamedTemporaryFile
 
-from adr_system.forms import InteractionCheckForm, RecommendationForm
+from django.contrib import messages
+from django.shortcuts import redirect, render
+
+from adr_system.forms import DatasetImportForm, InteractionCheckForm, RecommendationForm
 from detection.services.ddi_checker import check_pair
+from drugs.importers import import_drugbank_drugs, import_drugbank_interactions, import_sider_reactions
 from drugs.models import Drug
 from meddra.models import MedDraTerm
+from meddra.importers import import_meddra_terms
 from patients.models import PatientMedicationRecord
+from patients.importers import import_personalized_medication_dataset
 from recommender.services import recommend_safer_alternatives
 
 
@@ -37,3 +45,53 @@ def home(request):
         'meddra_term_count': MedDraTerm.objects.count(),
     }
     return render(request, 'adr_system/home.html', context)
+
+
+def import_data(request):
+    if request.method == 'POST':
+        form = DatasetImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            dataset_type = form.cleaned_data['dataset_type']
+            data_file = form.cleaned_data['data_file']
+            created, updated = _import_uploaded_dataset(dataset_type, data_file)
+            messages.success(request, f'Imported {dataset_type}: {created} created, {updated} updated.')
+            return redirect('import-data')
+    else:
+        form = DatasetImportForm()
+
+    return render(
+        request,
+        'adr_system/import_data.html',
+        {
+            'form': form,
+            'recent_counts': {
+                'drugs': Drug.objects.count(),
+                'patients': PatientMedicationRecord.objects.count(),
+                'meddra_terms': MedDraTerm.objects.count(),
+            },
+        },
+    )
+
+
+def _import_uploaded_dataset(dataset_type, uploaded_file):
+    if dataset_type == 'meddra-terms':
+        stream = io.TextIOWrapper(uploaded_file.file, encoding='utf-8-sig', newline='')
+        reader = csv.reader(stream, delimiter='\t')
+        return import_meddra_terms(reader)
+
+    stream = io.TextIOWrapper(uploaded_file.file, encoding='utf-8-sig', newline='')
+
+    if dataset_type == 'patient-medication':
+        reader = csv.DictReader(stream)
+        return import_personalized_medication_dataset(reader, source_filename=uploaded_file.name)
+
+    reader = csv.DictReader(stream)
+
+    if dataset_type == 'drugbank-drugs':
+        return import_drugbank_drugs(reader)
+    if dataset_type == 'drugbank-interactions':
+        return import_drugbank_interactions(reader)
+    if dataset_type == 'sider-reactions':
+        return import_sider_reactions(reader)
+
+    raise ValueError(f'Unsupported dataset type: {dataset_type}')

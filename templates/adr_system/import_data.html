@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Import Data{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow-sm p-4 mb-4">
+  <h1 class="h3 mb-2">Import Data</h1>
+  <p class="text-muted mb-0">Upload a supported CSV or TSV file to load the project datasets from the browser.</p>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-5">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h5 mb-3">Upload File</h2>
+      <form method="post" enctype="multipart/form-data" class="vstack gap-3">
+        {% csrf_token %}
+        <div>
+          {{ form.dataset_type.label_tag }}
+          {{ form.dataset_type }}
+          {{ form.dataset_type.errors }}
+        </div>
+        <div>
+          {{ form.data_file.label_tag }}
+          {{ form.data_file }}
+          {{ form.data_file.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Import</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-7">
+    <div class="bg-white rounded shadow-sm p-4 h-100">
+      <h2 class="h5 mb-3">What You Can Import</h2>
+      <div class="list-group">
+        <div class="list-group-item">
+          <div class="fw-semibold">DrugBank drugs</div>
+          <div class="small text-muted">CSV with drug names, codes, manufacturer, and description fields.</div>
+        </div>
+        <div class="list-group-item">
+          <div class="fw-semibold">DrugBank interactions</div>
+          <div class="small text-muted">CSV with source and target drug columns plus severity and notes.</div>
+        </div>
+        <div class="list-group-item">
+          <div class="fw-semibold">SIDER adverse reactions</div>
+          <div class="small text-muted">CSV with drug names, reaction names, and optional MedDRA references.</div>
+        </div>
+        <div class="list-group-item">
+          <div class="fw-semibold">Personalized medication dataset</div>
+          <div class="small text-muted">Kaggle patient-case CSV already present in this workspace.</div>
+        </div>
+        <div class="list-group-item">
+          <div class="fw-semibold">MedDRA terminology TSV</div>
+          <div class="small text-muted">Tab-separated terminology file used by the NLP extractor.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -12,6 +12,7 @@
       <a class="navbar-brand" href="/">ADR System</a>
       <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link" href="/import/">Import Data</a>
         <a class="nav-link" href="/drugs/">Drug Catalog</a>
         <a class="nav-link" href="/patients/">Patient Records</a>
         <a class="nav-link" href="/meddra/">MedDRA Browser</a>
@@ -19,6 +20,13 @@
     </div>
   </nav>
   <main class="container py-5">
+    {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 </body>

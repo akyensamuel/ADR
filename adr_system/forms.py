@@ -20,3 +20,21 @@ class RecommendationForm(forms.Form):
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Metformin'}),
     )
+
+
+class DatasetImportForm(forms.Form):
+    dataset_type = forms.ChoiceField(
+        label='Dataset type',
+        choices=(
+            ('drugbank-drugs', 'DrugBank drugs'),
+            ('drugbank-interactions', 'DrugBank interactions'),
+            ('sider-reactions', 'SIDER adverse reactions'),
+            ('patient-medication', 'Personalized medication dataset'),
+            ('meddra-terms', 'MedDRA terminology TSV'),
+        ),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+    data_file = forms.FileField(
+        label='Upload file',
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
+    )
