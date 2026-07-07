@@ -5,5 +5,6 @@ db.sqlite3
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-/meddra.tsv
+meddra.tsv/
 ADR_System_Implementation_Plan.md
+personalised_medication_dataset.csv
