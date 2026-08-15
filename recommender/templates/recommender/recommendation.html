@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Safer Alternatives - ADR System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2 class="mb-4">Find Safer Alternatives</h2>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="drug_name" class="form-label">Drug Name</label>
+                        <input type="text" class="form-control" id="drug_name" name="drug_name" value="{{ drug_name }}" required>
+                        <div class="form-text">Enter a drug name to find safer alternatives that do not interact with it.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Find Alternatives</button>
+                </form>
+            </div>
+        </div>
+
+        {% if recommendations is not None %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recommended Alternatives</h5>
+            </div>
+            <div class="card-body">
+                {% if recommendations %}
+                    <ul class="list-group">
+                    {% for drug in recommendations %}
+                        <li class="list-group-item">{{ drug }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No alternative drugs found or drug not recognized.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

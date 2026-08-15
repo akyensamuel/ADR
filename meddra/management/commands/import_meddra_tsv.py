@@ -11,16 +11,18 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--path', required=True, help='Path to meddra.tsv')
+        parser.add_argument('--clean', action='store_true', help='Clean existing database records before importing')
 
     def handle(self, *args, **options):
         tsv_path = Path(options['path'])
+        clean = options['clean']
         if not tsv_path.exists():
             raise CommandError(f'TSV file does not exist: {tsv_path}')
 
         with tsv_path.open('r', encoding='utf-8-sig', newline='') as tsv_file:
             reader = csv.reader(tsv_file, delimiter='\t')
-            created, updated = import_meddra_terms(reader)
+            created, updated = import_meddra_terms(reader, clean=clean)
 
         self.stdout.write(self.style.SUCCESS(
-            f'Imported MedDRA data from {tsv_path}: {created} created, {updated} updated.'
+            f'Imported MedDRA data from {tsv_path}: {created} items processed (updated: {updated}).'
         ))

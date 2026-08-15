@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Drug Interaction Check - ADR System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2 class="mb-4">Check Drug Interaction</h2>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="source_drug" class="form-label">First Drug Name</label>
+                        <input type="text" class="form-control" id="source_drug" name="source_drug" value="{{ source_drug }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="target_drug" class="form-label">Second Drug Name</label>
+                        <input type="text" class="form-control" id="target_drug" name="target_drug" value="{{ target_drug }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Check Interaction</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-{{ result.is_risky|yesno:'danger,success' }} text-white">
+                <h5 class="mb-0">Result: {% if result.is_risky %}Interaction Found{% else %}No Interaction{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                {% if result.is_risky %}
+                    <p><strong>Severity:</strong> <span class="badge bg-warning text-dark">{{ result.severity|title }}</span></p>
+                {% endif %}
+                <p><strong>Description:</strong> {{ result.description }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

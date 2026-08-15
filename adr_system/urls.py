@@ -25,5 +25,7 @@ urlpatterns = [
     path('drugs/', include('drugs.urls')),
     path('patients/', include('patients.urls')),
     path('meddra/', include('meddra.urls')),
+    path('detection/', include('detection.urls')),
+    path('recommender/', include('recommender.urls')),
     path('admin/', admin.site.urls),
 ]
