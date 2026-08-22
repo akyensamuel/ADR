@@ -6,29 +6,30 @@
 <style>
   /* ── Hero ───────────────────────────────────────── */
   .hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #6929c4 100%);
-    border-radius: 20px;
-    padding: 2.25rem 2.5rem;
+    background: linear-gradient(135deg, var(--color-pink-primary) 0%, var(--color-pink-dark) 100%);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
     color: #fff;
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 10px 25px rgba(216, 27, 96, 0.15);
   }
   .hero::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at top right, rgba(105,41,196,.4), transparent 60%);
+    background: radial-gradient(ellipse at top right, rgba(255,255,255,.15), transparent 60%);
     pointer-events: none;
   }
-  .hero h1 { font-size: 1.85rem; font-weight: 800; margin-bottom: .35rem; }
-  .hero p  { opacity: .8; margin: 0; font-size: .95rem; max-width: 600px; }
+  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: .35rem; letter-spacing: -0.5px; }
+  .hero p  { opacity: .85; margin: 0; font-size: 1rem; max-width: 600px; }
 
   /* ── Cards ──────────────────────────────────────── */
   .adr-card {
     background: #fff;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
     margin-bottom: 1.5rem;
     overflow: hidden;
   }
@@ -36,44 +37,48 @@
     display: flex;
     align-items: center;
     gap: .5rem;
-    padding: .9rem 1.4rem;
+    padding: 1rem 1.5rem;
     font-weight: 700;
-    font-size: .92rem;
+    font-size: .95rem;
     letter-spacing: .02em;
-    border-bottom: 1px solid #e8e8e8;
-    background: #f8f9fa;
-    color: #1a1a2e;
+    border-bottom: 1px solid #f0f0f0;
+    background: var(--color-cream);
+    color: var(--color-text-main);
   }
-  .adr-card .card-body { padding: 1.4rem; }
+  .adr-card .card-header i { color: var(--color-pink-primary); font-size: 1.1rem; }
+  .adr-card .card-body { padding: 1.5rem; }
 
   /* ── Input area ─────────────────────────────────── */
   #clinical_text {
     font-family: 'Courier New', monospace;
-    font-size: .88rem;
+    font-size: .9rem;
     line-height: 1.6;
     border-radius: 12px;
-    border: 1.5px solid #d0d0d0;
+    border: 1.5px solid #eaeaea;
     transition: border-color .2s, box-shadow .2s;
     resize: vertical;
   }
   #clinical_text:focus {
-    border-color: #6929c4;
-    box-shadow: 0 0 0 3px rgba(105,41,196,.15);
+    border-color: var(--color-pink-primary);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
     outline: none;
   }
 
   /* ── Submit button ──────────────────────────────── */
   .btn-analyze {
-    background: linear-gradient(135deg, #0f62fe, #6929c4);
+    background: var(--color-pink-primary);
     border: none;
     border-radius: 12px;
-    padding: .65rem 1.8rem;
-    font-weight: 700;
+    padding: .75rem 1.8rem;
+    font-weight: 600;
     font-size: .95rem;
     color: #fff;
-    transition: opacity .2s, transform .1s;
+    transition: background-color .2s, transform .1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .btn-analyze:hover  { opacity: .88; transform: translateY(-1px); color: #fff; }
+  .btn-analyze:hover  { background-color: var(--color-pink-hover); color: #fff; }
   .btn-analyze:active { transform: translateY(0); }
 
   /* ── Tag pills ──────────────────────────────────── */
@@ -81,16 +86,16 @@
   .tag {
     display: inline-flex; align-items: center; gap: .4rem;
     border-radius: 20px;
-    padding: .28rem .85rem;
-    font-size: .82rem;
+    padding: .3rem .9rem;
+    font-size: .85rem;
     font-weight: 600;
     animation: popIn .2s ease both;
   }
-  .tag-drug     { background: #e8f4fd; border: 1px solid #90cdf4; color: #1a5276; }
-  .tag-symptom  { background: #edf4ff; border: 1px solid #a8c8ff; color: #0043ce; }
-  .tag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .tag-drug    .tag-dot { background: #2980b9; }
-  .tag-symptom .tag-dot { background: #0f62fe; }
+  .tag-drug     { background: var(--color-pink-light); border: 1px solid rgba(216, 27, 96, 0.2); color: var(--color-pink-dark); }
+  .tag-symptom  { background: #fdf0f4; border: 1px solid #f8b4cb; color: #b71c1c; }
+  .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tag-drug    .tag-dot { background: var(--color-pink-primary); }
+  .tag-symptom .tag-dot { background: #d32f2f; }
 
   @keyframes popIn {
     from { opacity: 0; transform: scale(.75); }
@@ -99,12 +104,12 @@
 
   /* ── Interaction alert cards ────────────────────── */
   .interaction-card {
-    border-radius: 14px;
+    border-radius: 16px;
     border-left: 5px solid;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
     background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    box-shadow: 0 4px 15px rgba(0,0,0,.04);
   }
   .sev-high     { border-color: #e74c3c; background: #fdf0f0; }
   .sev-moderate { border-color: #f39c12; background: #fefaf0; }
@@ -125,20 +130,22 @@
   .sev-low      .sev-badge { background: #27ae60; color: #fff; }
   .sev-unknown  .sev-badge { background: #7f8c8d; color: #fff; }
 
-  .drug-pair { font-weight: 700; font-size: 1rem; margin-bottom: .35rem; }
-  .drug-pair .arrow { color: #c0392b; margin: 0 .4rem; }
+  .drug-pair { font-weight: 700; font-size: 1.1rem; margin-bottom: .5rem; }
+  .drug-pair .arrow { color: #c0392b; margin: 0 .5rem; font-size: 1rem;}
 
   /* ── Alternatives ───────────────────────────────── */
-  .alt-section { margin-bottom: 1rem; }
-  .alt-section h6 { font-size: .85rem; font-weight: 700; color: #555; margin-bottom: .5rem; }
+  .alt-section { margin-bottom: 1.25rem; }
+  .alt-section h6 { font-size: .9rem; font-weight: 700; color: #555; margin-bottom: .5rem; }
   .alt-pill {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     background: #e8f8ef;
     border: 1px solid #a9dfbf;
     color: #1e8449;
     border-radius: 20px;
-    padding: .25rem .75rem;
-    font-size: .82rem;
+    padding: .25rem .85rem;
+    font-size: .85rem;
     font-weight: 600;
     margin: .2rem .2rem 0 0;
   }
@@ -146,11 +153,11 @@
   /* ── Empty / meta states ────────────────────────── */
   .empty-state {
     text-align: center;
-    padding: 1.5rem 1rem;
+    padding: 2rem 1rem;
     color: #888;
-    font-size: .9rem;
+    font-size: .95rem;
   }
-  .result-meta { font-size: .8rem; color: #888; margin-bottom: .75rem; }
+  .result-meta { font-size: .85rem; color: #888; margin-bottom: 1rem; }
 
   /* ── Summary strip ──────────────────────────────── */
   .summary-strip {
@@ -160,28 +167,29 @@
   .summary-item {
     flex: 1; min-width: 130px;
     background: #fff;
-    border-radius: 14px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
     text-align: center;
   }
-  .summary-item .num { font-size: 2rem; font-weight: 800; line-height: 1; }
-  .summary-item .lbl { font-size: .75rem; color: #666; margin-top: .2rem; }
-  .num-drugs    { color: #2980b9; }
-  .num-symptoms { color: #0f62fe; }
+  .summary-item .num { font-size: 2.25rem; font-weight: 800; line-height: 1; margin-bottom: .25rem;}
+  .summary-item .lbl { font-size: .8rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .05em;}
+  .num-drugs    { color: var(--color-pink-primary); }
+  .num-symptoms { color: var(--color-pink-dark); }
   .num-ixns     { color: #e74c3c; }
   .num-alts     { color: #27ae60; }
 </style>
 
 <!-- Hero -->
 <div class="hero">
-  <h1>🔍 ADR Report Analyzer</h1>
-  <p>Describe your symptoms and the drugs you have taken in plain text. The NLP pipeline will extract drug names, map symptoms to MedDRA terms, detect drug interactions, and suggest safer alternatives — all from our database.</p>
+  <h1><i class="bi bi-search me-2"></i> ADR Report Analyzer</h1>
+  <p>Describe your symptoms and the drugs you have taken in plain text. The AI pipeline will extract drug names, map symptoms to MedDRA terms, detect drug interactions, and suggest safer alternatives.</p>
 </div>
 
 <!-- Input card -->
 <div class="adr-card">
-  <div class="card-header">📋 Clinical Description</div>
+  <div class="card-header"><i class="bi bi-file-earmark-text"></i> Clinical Description</div>
   <div class="card-body">
     <form method="post" id="analyze-form">
       {% csrf_token %}
@@ -200,7 +208,7 @@
         <div class="form-text">Include drug names and symptom descriptions in natural language.</div>
       </div>
       <button type="submit" class="btn btn-analyze" id="analyze-btn">
-        <span id="btn-label">⚡ Run Full Analysis</span>
+        <i class="bi bi-lightning-charge-fill" id="btn-icon"></i> <span id="btn-label">Run Full Analysis</span>
       </button>
     </form>
   </div>
@@ -237,10 +245,10 @@
 
         <!-- Drugs found -->
         <div class="adr-card">
-          <div class="card-header">💊 Drugs Identified</div>
+          <div class="card-header"><i class="bi bi-capsule"></i> Drugs Identified</div>
           <div class="card-body">
             {% if result.drugs_found %}
-              <p class="result-meta">Matched against the drug database</p>
+              <p class="result-meta">Matched against the drug catalog</p>
               <div class="tag-list">
                 {% for drug in result.drugs_found %}
                 <span class="tag tag-drug" style="animation-delay:{{ forloop.counter0 }}0ms">
@@ -249,17 +257,17 @@
                 {% endfor %}
               </div>
             {% else %}
-              <div class="empty-state">No drugs from the database were identified in the text.</div>
+              <div class="empty-state">No drugs from the catalog were identified in the text.</div>
             {% endif %}
           </div>
         </div>
 
         <!-- Symptoms / MedDRA terms -->
         <div class="adr-card">
-          <div class="card-header">🧠 MedDRA Adverse Reactions</div>
+          <div class="card-header"><i class="bi bi-person-fill-exclamation"></i> MedDRA Adverse Reactions</div>
           <div class="card-body">
             {% if result.symptoms_found %}
-              <p class="result-meta">Extracted via NLP PhraseMatcher</p>
+              <p class="result-meta">Extracted via AI Analysis</p>
               <div class="tag-list">
                 {% for symptom in result.symptoms_found %}
                 <span class="tag tag-symptom" style="animation-delay:{{ forloop.counter0 }}0ms">
@@ -280,7 +288,7 @@
 
         <!-- Drug interactions -->
         <div class="adr-card">
-          <div class="card-header">⚠️ Drug–Drug Interactions</div>
+          <div class="card-header"><i class="bi bi-exclamation-triangle-fill"></i> Drug–Drug Interactions</div>
           <div class="card-body">
             {% if result.interactions %}
               {% for ixn in result.interactions %}
@@ -295,24 +303,24 @@
                 {% endif %}
                   <div class="drug-pair">
                     {{ ixn.drug_a }}
-                    <span class="arrow">⟷</span>
+                    <i class="bi bi-arrow-left-right arrow"></i>
                     {{ ixn.drug_b }}
                     {% if ixn.severity %}
                     <span class="sev-badge ms-2">{{ ixn.severity }}</span>
                     {% endif %}
                   </div>
-                  <p class="mb-0" style="font-size:.87rem; color:#333;">{{ ixn.description }}</p>
+                  <p class="mb-0 mt-2" style="font-size:.9rem; color:#444;">{{ ixn.description }}</p>
                 </div>
               {% endfor %}
 
             {% else %}
               <div class="empty-state">
                 {% if result.drugs_found|length >= 2 %}
-                  ✅ No known interactions found between the identified drugs.
+                  <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i> No known interactions found between the identified drugs.
                 {% elif result.drugs_found|length == 1 %}
-                  Only one drug was identified — need at least two to check for interactions.
+                  <i class="bi bi-info-circle fs-3 d-block mb-2"></i> Only one drug was identified — need at least two to check for interactions.
                 {% else %}
-                  No drugs detected — interactions cannot be checked.
+                  <i class="bi bi-x-circle fs-3 d-block mb-2"></i> No drugs detected — interactions cannot be checked.
                 {% endif %}
               </div>
             {% endif %}
@@ -321,7 +329,7 @@
 
         <!-- Safer alternatives -->
         <div class="adr-card">
-          <div class="card-header">💡 Safer Alternatives</div>
+          <div class="card-header"><i class="bi bi-lightbulb-fill"></i> Safer Alternatives</div>
           <div class="card-body">
             {% if result.alternatives %}
               {% for drug_name, alts in result.alternatives.items %}
@@ -329,17 +337,17 @@
                 <h6>Replace <strong>{{ drug_name }}</strong> with:</h6>
                 {% if alts %}
                   {% for alt in alts %}
-                  <span class="alt-pill">✔ {{ alt }}</span>
+                  <span class="alt-pill"><i class="bi bi-check-circle-fill"></i> {{ alt }}</span>
                   {% endfor %}
                 {% else %}
-                  <span class="text-muted" style="font-size:.85rem;">No alternatives found in the database.</span>
+                  <span class="text-muted" style="font-size:.85rem;">No alternatives found in the catalog.</span>
                 {% endif %}
               </div>
               {% endfor %}
             {% else %}
               <div class="empty-state">
                 {% if result.has_interactions %}
-                  No safer alternatives found in the database for the interacting drugs.
+                  No safer alternatives found for the interacting drugs.
                 {% else %}
                   Alternatives are shown when drug interactions are detected.
                 {% endif %}
@@ -355,7 +363,8 @@
     <div class="adr-card">
       <div class="card-body">
         <div class="empty-state py-4">
-          <p class="mb-1 fs-5">⚠️ No drugs or MedDRA terms were detected.</p>
+          <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3 d-block"></i>
+          <p class="mb-1 fs-5 fw-bold text-dark">No drugs or MedDRA terms were detected.</p>
           <p class="text-muted mb-0">Try including specific drug names and symptom descriptions in your text.</p>
         </div>
       </div>
@@ -368,8 +377,10 @@
   document.getElementById('analyze-form').addEventListener('submit', function () {
     const btn = document.getElementById('analyze-btn');
     const lbl = document.getElementById('btn-label');
+    const icon = document.getElementById('btn-icon');
     btn.disabled = true;
-    lbl.textContent = '⏳ Running NLP analysis…';
+    lbl.textContent = 'Running NLP analysis…';
+    icon.className = 'bi bi-hourglass-split';
   });
 </script>
 {% endblock %}

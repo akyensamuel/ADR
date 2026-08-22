@@ -1,7 +1,5 @@
 from django.shortcuts import render
-from .services.ddi_checker import check_pair
-from .services.nlp_extractor import extract_symptoms
-from .services.gemini_analyzer import analyze
+from .services.gemini_analyzer import analyze, check_interaction_pair, extract_symptoms
 
 
 def interaction_check(request):
@@ -13,7 +11,7 @@ def interaction_check(request):
         source_drug = request.POST.get('source_drug', '').strip()
         target_drug = request.POST.get('target_drug', '').strip()
         if source_drug and target_drug:
-            result = check_pair(source_drug, target_drug)
+            result = check_interaction_pair(source_drug, target_drug)
 
     return render(request, 'detection/interaction_check.html', {
         'result': result,

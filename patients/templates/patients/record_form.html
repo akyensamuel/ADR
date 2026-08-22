@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Patient Record — ADR System{% endblock %}
+
+{% block content %}
+<style>
+  .form-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
+    overflow: hidden;
+  }
+  .form-card .card-header {
+    background: linear-gradient(135deg, var(--color-pink-primary) 0%, var(--color-pink-dark) 100%);
+    padding: 1.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #fff;
+    border-bottom: none;
+  }
+  .form-card .card-body {
+    padding: 2rem;
+  }
+  .btn-primary-custom {
+    background: var(--color-pink-primary);
+    border: none;
+    border-radius: 12px;
+    padding: .75rem 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    transition: background-color .2s, transform .1s;
+  }
+  .btn-primary-custom:hover { background: var(--color-pink-hover); color: #fff; }
+  .btn-primary-custom:active { transform: translateY(0); }
+  .form-label {
+    font-weight: 600;
+    color: var(--color-text-main);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  .form-control {
+    border-radius: 10px;
+    border: 1.5px solid #eaeaea;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-control:focus {
+    border-color: var(--color-pink-primary);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
+    outline: none;
+  }
+  .help-text {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 0.25rem;
+  }
+  .errorlist {
+      color: #dc3545;
+      font-size: 0.85rem;
+      list-style-type: none;
+      padding-left: 0;
+      margin-top: 0.25rem;
+  }
+</style>
+
+<div class="row">
+  <div class="col-lg-8 offset-lg-2">
+    <a href="{% url 'patient-record-list' %}" class="btn btn-link text-decoration-none mb-3 px-0" style="color:var(--color-pink-primary); font-weight:600;">
+      <i class="bi bi-arrow-left"></i> Back to Patient Records
+    </a>
+
+    <div class="form-card">
+      <div class="card-header">
+        <i class="bi bi-person-plus-fill me-2"></i> Add New Patient Record
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="row g-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.patient_id.id_for_label }}">Patient ID *</label>
+              {{ form.patient_id }}
+              {{ form.patient_id.errors }}
+              <div class="help-text">Unique identifier for this patient.</div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+              <label class="form-label" for="{{ form.age.id_for_label }}">Age *</label>
+              {{ form.age }}
+              {{ form.age.errors }}
+            </div>
+            
+            <div class="col-md-3 mb-3">
+              <label class="form-label" for="{{ form.gender.id_for_label }}">Gender *</label>
+              {{ form.gender }}
+              {{ form.gender.errors }}
+            </div>
+          </div>
+          
+          <div class="row g-3">
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.weight_kg.id_for_label }}">Weight (kg) *</label>
+              {{ form.weight_kg }}
+              {{ form.weight_kg.errors }}
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.height_cm.id_for_label }}">Height (cm) *</label>
+              {{ form.height_cm }}
+              {{ form.height_cm.errors }}
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.bmi.id_for_label }}">BMI *</label>
+              {{ form.bmi }}
+              {{ form.bmi.errors }}
+            </div>
+          </div>
+
+          <h5 class="mt-4 mb-3 fw-bold" style="color: var(--color-pink-dark);"><i class="bi bi-clipboard2-pulse me-2"></i> Clinical History</h5>
+          
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.diagnosis.id_for_label }}">Diagnosis *</label>
+            {{ form.diagnosis }}
+            {{ form.diagnosis.errors }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.chronic_conditions.id_for_label }}">Chronic Conditions</label>
+            {{ form.chronic_conditions }}
+            {{ form.chronic_conditions.errors }}
+          </div>
+          
+          <div class="row g-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.drug_allergies.id_for_label }}">Drug Allergies</label>
+              {{ form.drug_allergies }}
+              {{ form.drug_allergies.errors }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.genetic_disorders.id_for_label }}">Genetic Disorders</label>
+              {{ form.genetic_disorders }}
+              {{ form.genetic_disorders.errors }}
+            </div>
+          </div>
+
+          <h5 class="mt-4 mb-3 fw-bold" style="color: var(--color-pink-dark);"><i class="bi bi-capsule me-2"></i> Treatment & ADR</h5>
+          
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.recommended_medication.id_for_label }}">Recommended Medication</label>
+            {{ form.recommended_medication }}
+            {{ form.recommended_medication.errors }}
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.dosage.id_for_label }}">Dosage</label>
+              {{ form.dosage }}
+              {{ form.dosage.errors }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.duration.id_for_label }}">Duration</label>
+              {{ form.duration }}
+              {{ form.duration.errors }}
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.symptoms.id_for_label }}">Reported Symptoms</label>
+            {{ form.symptoms }}
+            {{ form.symptoms.errors }}
+            <div class="help-text">Describe the adverse reactions or side effects experienced by the patient.</div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.adverse_reactions.id_for_label }}">ADR Present?</label>
+              {{ form.adverse_reactions }}
+              {{ form.adverse_reactions.errors }}
+              <div class="help-text">e.g. Yes/No</div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.treatment_effectiveness.id_for_label }}">Effectiveness</label>
+              {{ form.treatment_effectiveness }}
+              {{ form.treatment_effectiveness.errors }}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="{{ form.recovery_time_days.id_for_label }}">Recovery Time (Days)</label>
+              {{ form.recovery_time_days }}
+              {{ form.recovery_time_days.errors }}
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top text-end">
+            <button type="submit" class="btn-primary-custom">
+              <i class="bi bi-save me-1"></i> Save Patient Record
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add bootstrap form-control class to all inputs from Django form
+  document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      if(input.type !== 'hidden' && input.type !== 'checkbox') {
+        input.classList.add('form-control');
+      }
+    });
+  });
+</script>
+{% endblock %}

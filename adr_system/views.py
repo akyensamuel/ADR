@@ -40,7 +40,6 @@ def home(request):
         'recommendation_form': recommendation_form,
         'interaction_result': interaction_result,
         'recommendations': recommendations,
-        'active_drugs': Drug.objects.filter(is_active=True).order_by('name'),
         'patient_record_count': PatientMedicationRecord.objects.count(),
         'meddra_term_count': MedDraTerm.objects.count(),
     }

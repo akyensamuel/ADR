@@ -4,164 +4,193 @@
 {% block content %}
 <style>
   .detail-hero {
-    background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
-    border-radius: 20px;
-    padding: 2rem 2.5rem;
+    background: linear-gradient(135deg, var(--color-pink-primary) 0%, var(--color-pink-dark) 100%);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
     color: #fff;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 25px rgba(216, 27, 96, 0.15);
   }
-  .detail-hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: .3rem; }
-  .detail-hero .sub { opacity: .75; font-size: .9rem; }
+  .detail-hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: .3rem; letter-spacing: -0.5px; }
+  .detail-hero .sub { opacity: .85; font-size: .95rem; }
 
   .meta-pill {
     display: inline-flex;
     align-items: center;
-    gap: .35rem;
-    background: rgba(255,255,255,.12);
+    gap: .4rem;
+    background: rgba(255,255,255,.15);
     border: 1px solid rgba(255,255,255,.2);
     border-radius: 20px;
-    padding: .2rem .8rem;
-    font-size: .78rem;
+    padding: .3rem .9rem;
+    font-size: .8rem;
     font-weight: 600;
-    color: #e0e7ff;
+    color: #fff;
     margin: .2rem .2rem 0 0;
   }
+  .meta-pill i { opacity: 0.9; }
 
   .back-link {
     display: inline-flex;
     align-items: center;
     gap: .35rem;
-    color: rgba(255,255,255,.7);
+    color: var(--color-pink-primary);
     text-decoration: none;
-    font-size: .85rem;
-    margin-bottom: 1rem;
+    font-size: .9rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
   }
-  .back-link:hover { color: #fff; }
+  .back-link:hover { color: var(--color-pink-hover); }
 
   .info-card {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 16px rgba(0,0,0,.07);
-    margin-bottom: 1.25rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.03);
     overflow: hidden;
   }
   .info-card .card-header {
-    background: #f4f6fa;
-    border-bottom: 1px solid #e4e7ee;
-    padding: .75rem 1.25rem;
+    background: var(--color-cream);
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem 1.5rem;
     font-weight: 700;
-    font-size: .88rem;
-    color: #1a1a2e;
+    font-size: .95rem;
+    color: var(--color-text-main);
     display: flex;
     align-items: center;
-    gap: .4rem;
+    gap: .5rem;
+  }
+  .info-card .card-header i {
+    color: var(--color-pink-primary);
+    font-size: 1.1rem;
   }
   .info-card .card-body {
-    padding: 1.1rem 1.25rem;
-    font-size: .88rem;
+    padding: 1.25rem 1.5rem;
+    font-size: .9rem;
     line-height: 1.7;
-    color: #333;
+    color: #444;
     white-space: pre-wrap;
     word-break: break-word;
   }
-  .info-card .card-body.empty { color: #aaa; font-style: italic; }
+  .info-card .card-body.empty { color: #999; font-style: italic; }
 
   .rxnorm-box {
-    background: #edf4ff;
-    border: 1px solid #a8c8ff;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    font-size: .85rem;
+    background: var(--color-pink-light);
+    border: 1px solid rgba(216, 27, 96, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    font-size: .9rem;
   }
   .rxnorm-box .rxcui {
     font-weight: 700;
-    color: #0043ce;
-    font-size: 1rem;
+    color: var(--color-pink-dark);
+    font-size: 1.1rem;
   }
   .synonym-chip {
     display: inline-block;
     background: #fff;
-    border: 1px solid #c0d4ff;
+    border: 1px solid rgba(216, 27, 96, 0.2);
     border-radius: 20px;
-    padding: .15rem .65rem;
+    padding: .2rem .75rem;
     font-size: .75rem;
-    color: #0043ce;
+    color: var(--color-pink-dark);
     margin: .15rem .1rem 0 0;
+    font-weight: 500;
+  }
+  
+  .btn-analyze {
+    background-color: var(--color-pink-primary);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-analyze:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(216, 27, 96, 0.2);
   }
 </style>
 
-<a href="{% url 'drug-list' %}" class="back-link" style="color:#0f62fe;">← Back to Drug Catalog</a>
+<a href="{% url 'drug-list' %}" class="back-link"><i class="bi bi-arrow-left"></i> Back to Drug Catalog</a>
 
 {% if error %}
-<div class="alert alert-warning rounded-3">{{ error }}</div>
-
+<div class="alert alert-warning rounded-3"><i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}</div>
 {% else %}
 
 <!-- Hero header -->
 <div class="detail-hero">
   <h1>{{ drug.name }}</h1>
-  <div class="mt-2">
-    {% if drug.dosage_form %}<span class="meta-pill">📋 {{ drug.dosage_form }}</span>{% endif %}
-    {% if drug.route %}<span class="meta-pill">🚀 {{ drug.route }}</span>{% endif %}
-    {% if drug.product_type %}<span class="meta-pill">🏷 {{ drug.product_type }}</span>{% endif %}
-    {% if drug.manufacturer %}<span class="meta-pill">🏭 {{ drug.manufacturer }}</span>{% endif %}
+  <div class="mt-3">
+    {% if drug.dosage_form %}<span class="meta-pill"><i class="bi bi-clipboard-data"></i> {{ drug.dosage_form }}</span>{% endif %}
+    {% if drug.route %}<span class="meta-pill"><i class="bi bi-rocket"></i> {{ drug.route }}</span>{% endif %}
+    {% if drug.product_type %}<span class="meta-pill"><i class="bi bi-tags"></i> {{ drug.product_type }}</span>{% endif %}
+    {% if drug.manufacturer %}<span class="meta-pill"><i class="bi bi-building"></i> {{ drug.manufacturer }}</span>{% endif %}
   </div>
-  {% if drug.brand_names %}
-  <div class="sub mt-2">Brand names: {{ drug.brand_names|join:", " }}</div>
-  {% endif %}
-  {% if drug.generic_names %}
-  <div class="sub">Generic: {{ drug.generic_names|join:", " }}</div>
-  {% endif %}
+  <div class="mt-3">
+    {% if drug.brand_names %}
+    <div class="sub"><strong>Brand names:</strong> {{ drug.brand_names|join:", " }}</div>
+    {% endif %}
+    {% if drug.generic_names %}
+    <div class="sub mt-1"><strong>Generic:</strong> {{ drug.generic_names|join:", " }}</div>
+    {% endif %}
+  </div>
 </div>
 
-<div class="row g-0">
+<div class="row g-4">
   <div class="col-lg-8 pe-lg-3">
 
     {% if drug.purpose %}
     <div class="info-card">
-      <div class="card-header">🎯 Purpose</div>
+      <div class="card-header"><i class="bi bi-bullseye"></i> Purpose</div>
       <div class="card-body">{{ drug.purpose }}</div>
     </div>
     {% endif %}
 
     {% if drug.indications %}
     <div class="info-card">
-      <div class="card-header">✅ Indications &amp; Usage</div>
+      <div class="card-header"><i class="bi bi-check-circle"></i> Indications &amp; Usage</div>
       <div class="card-body">{{ drug.indications }}</div>
     </div>
     {% endif %}
 
     {% if drug.contraindications %}
     <div class="info-card">
-      <div class="card-header">🚫 Contraindications</div>
+      <div class="card-header"><i class="bi bi-slash-circle"></i> Contraindications</div>
       <div class="card-body">{{ drug.contraindications }}</div>
     </div>
     {% endif %}
 
     {% if drug.warnings %}
     <div class="info-card">
-      <div class="card-header">⚠️ Warnings &amp; Cautions</div>
+      <div class="card-header"><i class="bi bi-exclamation-triangle"></i> Warnings &amp; Cautions</div>
       <div class="card-body">{{ drug.warnings }}</div>
     </div>
     {% endif %}
 
     {% if drug.adverse_reactions %}
     <div class="info-card">
-      <div class="card-header">🔴 Adverse Reactions</div>
+      <div class="card-header"><i class="bi bi-shield-x"></i> Adverse Reactions</div>
       <div class="card-body">{{ drug.adverse_reactions }}</div>
     </div>
     {% endif %}
 
     {% if drug.drug_interactions %}
     <div class="info-card">
-      <div class="card-header">⟷ Drug Interactions</div>
+      <div class="card-header"><i class="bi bi-arrow-left-right"></i> Drug Interactions</div>
       <div class="card-body">{{ drug.drug_interactions }}</div>
     </div>
     {% endif %}
 
     {% if drug.dosage %}
     <div class="info-card">
-      <div class="card-header">💊 Dosage &amp; Administration</div>
+      <div class="card-header"><i class="bi bi-capsule"></i> Dosage &amp; Administration</div>
       <div class="card-body">{{ drug.dosage }}</div>
     </div>
     {% endif %}
@@ -176,33 +205,31 @@
 
   <!-- Right sidebar: RxNorm -->
   <div class="col-lg-4">
-    <div class="rxnorm-box mb-3">
-      <div class="fw-bold mb-1" style="color:#1a1a2e;">RxNorm Terminology</div>
+    <div class="rxnorm-box mb-4">
+      <div class="fw-bold mb-2" style="color:var(--color-text-main);"><i class="bi bi-diagram-3 text-pink-primary me-2"></i> RxNorm Terminology</div>
       {% if drug.rxcui %}
         <div>RxCUI: <span class="rxcui">{{ drug.rxcui }}</span></div>
         {% if drug.synonyms %}
-        <div class="mt-2 fw-semibold" style="font-size:.78rem; color:#444;">Known Names:</div>
-        <div class="mt-1">
+        <div class="mt-3 fw-semibold" style="font-size:.8rem; color:#555;">Known Names:</div>
+        <div class="mt-2">
           {% for syn in drug.synonyms %}
           <span class="synonym-chip">{{ syn }}</span>
           {% endfor %}
         </div>
         {% endif %}
       {% else %}
-        <div class="text-muted" style="font-size:.82rem;">No RxNorm concept found for this drug.</div>
+        <div class="text-muted" style="font-size:.85rem;">No RxNorm concept found for this drug.</div>
       {% endif %}
     </div>
 
     <!-- Quick-analyze link -->
     <div class="info-card">
-      <div class="card-header">🔍 ADR Analyzer</div>
+      <div class="card-header"><i class="bi bi-magic"></i> ADR Analyzer</div>
       <div class="card-body">
-        <p style="font-size:.82rem; color:#555;">Describe your symptoms after taking <strong>{{ drug.name }}</strong> to get a full NLP analysis.</p>
-        <a
-          href="/detection/analyze/?prefill={{ drug.name|urlencode }}"
-          class="btn btn-sm"
-          style="background:linear-gradient(135deg,#0f62fe,#6929c4);color:#fff;border-radius:8px;font-weight:600;"
-        >⚡ Analyze with AI</a>
+        <p class="mb-3 text-muted">Describe your symptoms after taking <strong>{{ drug.name }}</strong> to get a full AI analysis.</p>
+        <a href="/detection/analyze/?prefill={{ drug.name|urlencode }}" class="btn-analyze w-100 justify-content-center">
+          <i class="bi bi-lightning-charge-fill"></i> Analyze with AI
+        </a>
       </div>
     </div>
   </div>

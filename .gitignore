@@ -9,3 +9,4 @@ db.sqlite3
 meddra_tsv/
 ADR_System_Implementation_Plan.md
 personalised_medication_dataset.csv
+SYSTEM_DOCUMENTATION.md

@@ -5,76 +5,92 @@
 {% block content %}
 <style>
   .nlp-hero {
-    background: linear-gradient(135deg, #0f62fe 0%, #6929c4 100%);
-    border-radius: 16px;
-    padding: 2rem 2.5rem;
+    background: linear-gradient(135deg, var(--color-pink-primary) 0%, var(--color-pink-dark) 100%);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
     color: #fff;
     margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(216, 27, 96, 0.15);
   }
-  .nlp-hero h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: .4rem; }
-  .nlp-hero p  { opacity: .85; margin: 0; }
+  .nlp-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(255,255,255,.15), transparent 60%);
+    pointer-events: none;
+  }
+  .nlp-hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: .4rem; letter-spacing: -0.5px; }
+  .nlp-hero p  { opacity: .85; margin: 0; font-size: 1rem; }
 
   .nlp-card {
     background: #fff;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
     overflow: hidden;
   }
   .nlp-card .card-header {
-    background: #f4f4f4;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--color-cream);
+    border-bottom: 1px solid #f0f0f0;
     padding: 1rem 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     font-size: .95rem;
     letter-spacing: .02em;
-    color: #393939;
+    color: var(--color-text-main);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
   }
+  .nlp-card .card-header i { color: var(--color-pink-primary); font-size: 1.1rem; }
   .nlp-card .card-body { padding: 1.5rem; }
 
   #clinical_notes {
     font-family: 'Courier New', monospace;
     font-size: .9rem;
-    border-radius: 10px;
-    border: 1.5px solid #d0d0d0;
-    transition: border-color .2s;
+    border-radius: 12px;
+    border: 1.5px solid #eaeaea;
+    transition: border-color .2s, box-shadow .2s;
     resize: vertical;
   }
   #clinical_notes:focus {
-    border-color: #0f62fe;
-    box-shadow: 0 0 0 3px rgba(15,98,254,.15);
+    border-color: var(--color-pink-primary);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
     outline: none;
   }
 
   .btn-analyze {
-    background: linear-gradient(135deg, #0f62fe, #6929c4);
+    background: var(--color-pink-primary);
     border: none;
-    border-radius: 10px;
-    padding: .6rem 1.6rem;
+    border-radius: 12px;
+    padding: .75rem 1.8rem;
     font-weight: 600;
-    letter-spacing: .02em;
+    font-size: .95rem;
     color: #fff;
-    transition: opacity .2s, transform .1s;
+    transition: background-color .2s, transform .1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .btn-analyze:hover  { opacity: .88; transform: translateY(-1px); color: #fff; }
+  .btn-analyze:hover  { background-color: var(--color-pink-hover); color: #fff; }
   .btn-analyze:active { transform: translateY(0); }
 
   .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; }
   .term-tag {
     display: inline-flex;
     align-items: center;
-    background: #edf4ff;
-    border: 1px solid #a8c8ff;
-    color: #0043ce;
+    background: var(--color-pink-light);
+    border: 1px solid rgba(216, 27, 96, 0.2);
+    color: var(--color-pink-dark);
     border-radius: 20px;
-    padding: .3rem .85rem;
+    padding: .3rem .9rem;
     font-size: .85rem;
-    font-weight: 500;
+    font-weight: 600;
     animation: popIn .2s ease both;
   }
   .term-tag .tag-dot {
-    width: 7px; height: 7px;
-    background: #0f62fe;
+    width: 8px; height: 8px;
+    background: var(--color-pink-primary);
     border-radius: 50%;
     margin-right: .45rem;
     flex-shrink: 0;
@@ -86,52 +102,60 @@
   }
 
   .result-meta {
-    font-size: .8rem;
-    color: #6f6f6f;
+    font-size: .85rem;
+    color: #888;
     margin-bottom: 1rem;
   }
 
   .empty-state {
     text-align: center;
-    padding: 2rem 1rem;
-    color: #6f6f6f;
+    padding: 2.5rem 1rem;
+    color: #888;
   }
-  .empty-state svg { margin-bottom: .75rem; opacity: .4; }
+  .empty-state i { margin-bottom: 1rem; font-size: 2.5rem; color: #ddd; display: block; }
 
   .highlighted-text {
-    background: #f4f4f4;
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
+    background: var(--color-cream);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
     font-family: 'Courier New', monospace;
     font-size: .85rem;
     line-height: 1.7;
-    color: #393939;
+    color: #444;
     word-break: break-word;
     white-space: pre-wrap;
+    border: 1px solid #f0f0f0;
   }
   mark.meddra-hit {
-    background: #bae6ff;
-    color: #003a6d;
+    background: var(--color-pink-light);
+    color: var(--color-pink-dark);
     border-radius: 4px;
-    padding: 0 2px;
+    padding: 0 4px;
+    font-weight: 600;
   }
 </style>
 
 <div class="nlp-hero">
-  <h1>🧠 NLP Symptom Extraction</h1>
-  <p>Paste clinical notes below. The spaCy NLP pipeline will tokenise the text and map detected phrases to standardised <strong>MedDRA</strong> terms.</p>
+  <h1><i class="bi bi-person-fill-exclamation me-2"></i> NLP Symptom Extraction</h1>
+  <p>Paste clinical notes below. The Gemini AI model will analyze the text and extract standardised <strong>MedDRA</strong> terms.</p>
 </div>
+
+{% if result and result.error %}
+<div class="alert alert-danger shadow-sm mb-4 rounded-3">
+  <strong><i class="bi bi-exclamation-triangle-fill me-2"></i> Error:</strong> {{ result.error }}
+</div>
+{% endif %}
 
 <div class="row g-4">
   <!-- Input card -->
   <div class="col-lg-6">
     <div class="nlp-card h-100">
-      <div class="card-header">📋 Clinical Notes Input</div>
+      <div class="card-header"><i class="bi bi-file-earmark-medical"></i> Clinical Notes Input</div>
       <div class="card-body">
         <form method="post" id="nlp-form">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="clinical_notes" class="form-label fw-semibold mb-1">Adverse Reaction Description</label>
+            <label for="clinical_notes" class="form-label fw-semibold mb-2">Adverse Reaction Description</label>
             <textarea
               class="form-control"
               id="clinical_notes"
@@ -141,12 +165,12 @@
               required
             >{{ clinical_notes }}</textarea>
           </div>
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center justify-content-between mt-4">
             <button type="submit" class="btn btn-analyze" id="analyze-btn">
-              <span id="btn-label">⚡ Analyze with NLP</span>
+              <i class="bi bi-lightning-charge-fill" id="btn-icon"></i> <span id="btn-label">Analyze with Gemini</span>
             </button>
-            {% if result %}
-            <span class="text-muted small">Found <strong>{{ result.symptoms|length }}</strong> MedDRA term{{ result.symptoms|length|pluralize }}</span>
+            {% if result and not result.error %}
+            <span class="text-muted small fw-semibold">Found <strong>{{ result.symptoms|length }}</strong> term{{ result.symptoms|length|pluralize }}</span>
             {% endif %}
           </div>
         </form>
@@ -157,12 +181,12 @@
   <!-- Results card -->
   <div class="col-lg-6">
     <div class="nlp-card h-100">
-      <div class="card-header">🔬 Extraction Results</div>
+      <div class="card-header"><i class="bi bi-robot"></i> Extraction Results</div>
       <div class="card-body">
-        {% if result %}
+        {% if result and not result.error %}
           {% if result.symptoms %}
             <p class="result-meta">
-              <strong>{{ result.symptoms|length }}</strong> MedDRA term{{ result.symptoms|length|pluralize }} identified via PhraseMatcher
+              <strong>{{ result.symptoms|length }}</strong> MedDRA term{{ result.symptoms|length|pluralize }} identified via AI Model
             </p>
             <div class="tag-list mb-4">
               {% for symptom in result.symptoms %}
@@ -171,25 +195,21 @@
               </span>
               {% endfor %}
             </div>
-            <div class="card-header" style="border-radius:10px 10px 0 0; margin:0 -1.5rem; padding-left:1.2rem;">
-              📄 Source Text
-            </div>
-            <div class="highlighted-text mt-0" style="border-radius:0 0 10px 10px;">{{ result.raw_text }}</div>
+            
+            <h6 class="fw-bold mb-3 mt-4" style="color:var(--color-text-main);"><i class="bi bi-blockquote-left me-2 text-pink-primary"></i>Source Text</h6>
+            <div class="highlighted-text">{{ result.raw_text }}</div>
           {% else %}
             <div class="empty-state">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-              </svg>
-              <p class="mb-0">No MedDRA terms detected in the provided text.<br><span class="small">Try including specific clinical symptom names.</span></p>
+              <i class="bi bi-file-earmark-x"></i>
+              <p class="mb-0 fs-5 text-dark fw-bold">No MedDRA terms detected</p>
+              <p class="small mt-1">Try including specific clinical symptom names in the text.</p>
             </div>
           {% endif %}
         {% else %}
           <div class="empty-state">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.646 2l-1.293 1.293a.5.5 0 0 0 .707.707L14 2.707ZM7.293 4.707a.5.5 0 0 0 .707-.707L6.707 2.707a.5.5 0 0 0-.707.707l1.293 1.293ZM6.025 6.5H.5a.5.5 0 0 0 0 1h5.525A3.5 3.5 0 1 0 6.025 6.5ZM10 9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
-            </svg>
-            <p class="mb-0 mt-2">Enter clinical notes on the left and click <strong>Analyze with NLP</strong> to extract standardised MedDRA terms.</p>
+            <i class="bi bi-magic text-pink-primary opacity-50"></i>
+            <p class="mb-0 fs-5 text-dark fw-bold">Ready for Analysis</p>
+            <p class="small mt-2">Enter clinical notes on the left and click <strong>Analyze with Gemini</strong> to extract standardised MedDRA terms.</p>
           </div>
         {% endif %}
       </div>
@@ -201,8 +221,10 @@
   document.getElementById('nlp-form').addEventListener('submit', function() {
     const btn = document.getElementById('analyze-btn');
     const label = document.getElementById('btn-label');
+    const icon = document.getElementById('btn-icon');
     btn.disabled = true;
-    label.textContent = '⏳ Analyzing…';
+    label.textContent = 'Analyzing…';
+    icon.className = 'bi bi-hourglass-split';
   });
 </script>
 {% endblock %}

@@ -3,114 +3,244 @@
 {% block title %}ADR System Home{% endblock %}
 
 {% block content %}
+<style>
+  .hero-section {
+    background-color: var(--color-pink-primary);
+    background-image: radial-gradient(circle at 100% 100%, var(--color-pink-dark) 0%, transparent 50%),
+                      radial-gradient(circle at 0% 0%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    border-radius: 24px;
+    padding: 3.5rem;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(216, 27, 96, 0.2);
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section h1 {
+    font-weight: 800;
+    letter-spacing: -1px;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .hero-section p.lead {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    max-width: 600px;
+  }
+  
+  .stats-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: right;
+  }
+  .stats-box .stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+  .stats-box .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .feature-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(216, 27, 96, 0.08);
+  }
+  .feature-card .icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--color-pink-light);
+    color: var(--color-pink-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .tool-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2.5rem;
+    height: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+  .tool-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-main);
+  }
+  
+  .btn-primary-custom {
+    background-color: var(--color-pink-primary);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 12px;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  .btn-primary-custom:hover {
+    background-color: var(--color-pink-hover);
+    color: white;
+  }
+  .btn-primary-custom:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-outline-custom {
+    border: 2px solid var(--color-pink-primary);
+    color: var(--color-pink-primary);
+    font-weight: 600;
+    border-radius: 12px;
+  }
+  .btn-outline-custom:hover {
+    background-color: var(--color-pink-primary);
+    color: white;
+  }
+  
+  .form-control-custom {
+    border-radius: 10px;
+    border: 1.5px solid #e0e0e0;
+    padding: 0.6rem 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-control-custom:focus {
+    border-color: var(--color-pink-primary);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
+    outline: none;
+  }
+</style>
+
 <div class="row g-4">
+  <!-- Hero Section -->
   <div class="col-12">
-    <div class="p-5 bg-white rounded shadow-sm">
-      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
-        <div>
-          <h1 class="display-6 mb-2">Adverse Drug Reaction Detection</h1>
-          <p class="lead mb-0">Check known interactions and get safer alternatives from the current drug catalog.</p>
+    <div class="hero-section">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1>Adverse Drug Reaction Detection</h1>
+          <p class="lead">Leveraging AI to identify risks, detect interactions, and recommend safer clinical alternatives seamlessly.</p>
         </div>
-        <div class="text-lg-end text-muted">
-          <div class="fw-semibold">Active drugs</div>
-          <div>{{ active_drugs|length }}</div>
-          <div class="fw-semibold mt-2">Patient records</div>
-          <div>{{ patient_record_count }}</div>
-          <div class="fw-semibold mt-2">MedDRA terms</div>
-          <div>{{ meddra_term_count }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12">
-    <div class="row g-3">
-      <div class="col-12 col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="h5 card-title">Drug Catalog</h2>
-            <p class="card-text text-muted">Browse loaded drugs, adverse reactions, and interaction links.</p>
-            <a class="btn btn-sm btn-outline-primary" href="/drugs/">Open catalog</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="h5 card-title">Patient Records</h2>
-            <p class="card-text text-muted">Review imported personalized medication cases from the Kaggle dataset.</p>
-            <a class="btn btn-sm btn-outline-primary" href="/patients/">Open records</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="h5 card-title">MedDRA Browser</h2>
-            <p class="card-text text-muted">Search standardized symptom and adverse event terminology.</p>
-            <a class="btn btn-sm btn-outline-primary" href="/meddra/">Open browser</a>
+        <div class="col-lg-4 mt-4 mt-lg-0">
+          <div class="stats-box">
+            <div class="stat-label">Patient Records</div>
+            <div class="stat-value">{{ patient_record_count }}</div>
+            <div class="stat-label">MedDRA Terms</div>
+            <div class="stat-value mb-0">{{ meddra_term_count }}</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-12 col-lg-6">
-    <div class="bg-white rounded shadow-sm p-4 h-100">
-      <h2 class="h4 mb-3">Interaction Check</h2>
+  <!-- Quick Links -->
+  <div class="col-12">
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="feature-card">
+          <div class="icon-wrapper"><i class="bi bi-journal-medical"></i></div>
+          <h2 class="h5 fw-bold">Drug Catalog</h2>
+          <p class="text-muted mb-4">Browse loaded drugs, adverse reactions, and interaction links.</p>
+          <a class="btn btn-sm btn-outline-custom" href="/drugs/">Open catalog</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="feature-card">
+          <div class="icon-wrapper"><i class="bi bi-people-fill"></i></div>
+          <h2 class="h5 fw-bold">Patient Records</h2>
+          <p class="text-muted mb-4">Review imported personalized medication cases from datasets.</p>
+          <a class="btn btn-sm btn-outline-custom" href="/patients/">Open records</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="feature-card">
+          <div class="icon-wrapper"><i class="bi bi-diagram-3"></i></div>
+          <h2 class="h5 fw-bold">MedDRA Browser</h2>
+          <p class="text-muted mb-4">Search standardized symptom and adverse event terminology.</p>
+          <a class="btn btn-sm btn-outline-custom" href="/meddra/">Open browser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Tools -->
+  <div class="col-12 col-lg-6 mt-5">
+    <div class="tool-card">
+      <h2><i class="bi bi-shield-check text-pink-primary me-2"></i> Interaction Check</h2>
+      <p class="text-muted mb-4">Verify clinical safety between two co-administered drugs.</p>
+      
       <form method="get" class="vstack gap-3">
         {{ interaction_form.non_field_errors }}
         <div>
-          {{ interaction_form.source_drug_name.label_tag }}
-          {{ interaction_form.source_drug_name }}
-          {{ interaction_form.source_drug_name.errors }}
+          <label class="form-label fw-semibold text-muted small text-uppercase">First Drug</label>
+          <input type="text" name="{{ interaction_form.source_drug_name.name }}" class="form-control form-control-custom" placeholder="e.g. Warfarin">
         </div>
         <div>
-          {{ interaction_form.target_drug_name.label_tag }}
-          {{ interaction_form.target_drug_name }}
-          {{ interaction_form.target_drug_name.errors }}
+          <label class="form-label fw-semibold text-muted small text-uppercase">Second Drug</label>
+          <input type="text" name="{{ interaction_form.target_drug_name.name }}" class="form-control form-control-custom" placeholder="e.g. Aspirin">
         </div>
-        <button type="submit" class="btn btn-primary">Check interaction</button>
+        <button type="submit" class="btn btn-primary-custom mt-2">Check interaction</button>
       </form>
 
       {% if interaction_result is not None %}
-      <div class="alert {% if interaction_result.is_risky %}alert-danger{% else %}alert-success{% endif %} mt-4 mb-0">
+      <div class="alert {% if interaction_result.is_risky %}alert-danger{% else %}alert-success{% endif %} mt-4 mb-0 rounded-3">
         <div class="fw-semibold">
+          <i class="bi {% if interaction_result.is_risky %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
           {% if interaction_result.is_risky %}Known interaction detected{% else %}No known interaction{% endif %}
         </div>
-        <div class="small">{{ interaction_result.description }}</div>
+        <div class="small mt-2">{{ interaction_result.description }}</div>
         {% if interaction_result.severity %}
-        <div class="small text-uppercase mt-2">Severity: {{ interaction_result.severity }}</div>
+        <div class="small text-uppercase mt-2 fw-bold opacity-75">Severity: {{ interaction_result.severity }}</div>
         {% endif %}
       </div>
       {% endif %}
     </div>
   </div>
 
-  <div class="col-12 col-lg-6">
-    <div class="bg-white rounded shadow-sm p-4 h-100">
-      <h2 class="h4 mb-3">Safer Alternatives</h2>
+  <div class="col-12 col-lg-6 mt-5">
+    <div class="tool-card">
+      <h2><i class="bi bi-arrow-left-right text-pink-primary me-2"></i> Safer Alternatives</h2>
+      <p class="text-muted mb-4">Find substitute medications to avoid dangerous interactions.</p>
+      
       <form method="get" class="vstack gap-3">
         {{ recommendation_form.non_field_errors }}
         <div>
-          {{ recommendation_form.drug_name.label_tag }}
-          {{ recommendation_form.drug_name }}
-          {{ recommendation_form.drug_name.errors }}
+          <label class="form-label fw-semibold text-muted small text-uppercase">Problematic Drug</label>
+          <input type="text" name="{{ recommendation_form.drug_name.name }}" class="form-control form-control-custom" placeholder="e.g. Simvastatin">
         </div>
-        <button type="submit" class="btn btn-outline-primary">Find alternatives</button>
+        <button type="submit" class="btn btn-outline-custom mt-2">Find alternatives</button>
       </form>
 
       {% if recommendations is not None %}
       <div class="mt-4">
-        <h3 class="h6 text-uppercase text-muted">Recommendations</h3>
+        <h3 class="h6 text-uppercase text-muted fw-bold mb-3">Recommendations</h3>
         {% if recommendations %}
-        <ul class="list-group">
+        <ul class="list-group rounded-3 shadow-sm">
           {% for name in recommendations %}
-          <li class="list-group-item">{{ name }}</li>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-check2 text-success me-2"></i> {{ name }}
+          </li>
           {% endfor %}
         </ul>
         {% else %}
-        <div class="alert alert-warning mb-0">No alternatives found for that drug.</div>
+        <div class="alert alert-warning mb-0 rounded-3"><i class="bi bi-info-circle me-2"></i> No alternatives found.</div>
         {% endif %}
       </div>
       {% endif %}

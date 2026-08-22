@@ -3,41 +3,153 @@
 {% block title %}Safer Alternatives - ADR System{% endblock %}
 
 {% block content %}
+<style>
+  .tool-header {
+    background: linear-gradient(135deg, var(--color-pink-primary) 0%, var(--color-pink-dark) 100%);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px rgba(216, 27, 96, 0.15);
+  }
+  .tool-header h1 { font-size: 2rem; font-weight: 800; margin-bottom: .4rem; letter-spacing: -0.5px; }
+  .tool-header p  { opacity: .85; margin: 0; font-size: 1rem; }
+
+  .custom-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.03);
+    overflow: hidden;
+  }
+  .custom-card .card-body { padding: 1.5rem; }
+
+  .form-control-custom {
+    border-radius: 12px;
+    border: 1.5px solid #eaeaea;
+    padding: .75rem 1rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .form-control-custom:focus {
+    border-color: var(--color-pink-primary);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
+    outline: none;
+  }
+
+  .btn-primary-custom {
+    background: var(--color-pink-primary);
+    border: none;
+    border-radius: 12px;
+    padding: .75rem 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    transition: background-color .2s, transform .1s;
+    width: 100%;
+  }
+  .btn-primary-custom:hover { background: var(--color-pink-hover); color: #fff; }
+  .btn-primary-custom:active { transform: translateY(0); }
+
+  .result-header {
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: #f0faf4; 
+    border-bottom: 1px solid #badbcc; 
+    color: #0f5132;
+  }
+
+  .alt-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  }
+  .alt-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #e8f8ef;
+    border: 1px solid #a9dfbf;
+    color: #1e8449;
+    border-radius: 12px;
+    padding: .75rem 1rem;
+    font-size: .95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .alt-list li:last-child {
+      margin-bottom: 0;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #888;
+  }
+</style>
+
 <div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2 class="mb-4">Find Safer Alternatives</h2>
-        <div class="card shadow-sm mb-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="tool-header text-center">
+            <h1><i class="bi bi-arrow-left-right me-2"></i> Safer Alternatives</h1>
+            <p>Find substitute medications to avoid dangerous interactions using Gemini AI.</p>
+        </div>
+
+        <div class="custom-card mb-4">
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="alt-form">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="drug_name" class="form-label">Drug Name</label>
-                        <input type="text" class="form-control" id="drug_name" name="drug_name" value="{{ drug_name }}" required>
-                        <div class="form-text">Enter a drug name to find safer alternatives that do not interact with it.</div>
+                    <div class="mb-4">
+                        <label for="drug_name" class="form-label fw-semibold">Problematic Drug Name</label>
+                        <input type="text" class="form-control form-control-custom" id="drug_name" name="drug_name" value="{{ drug_name }}" placeholder="e.g. Simvastatin" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Find Alternatives</button>
+                    <button type="submit" class="btn-primary-custom" id="check-btn">
+                        <i class="bi bi-robot me-1" id="btn-icon"></i> <span id="btn-label">Find Alternatives with AI</span>
+                    </button>
                 </form>
             </div>
         </div>
 
-        {% if recommendations is not None %}
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Recommended Alternatives</h5>
-            </div>
-            <div class="card-body">
-                {% if recommendations %}
-                    <ul class="list-group">
-                    {% for drug in recommendations %}
-                        <li class="list-group-item">{{ drug }}</li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">No alternative drugs found or drug not recognized.</p>
-                {% endif %}
-            </div>
-        </div>
+        {% if result %}
+            {% if result.error %}
+                <div class="alert alert-danger shadow-sm rounded-3">
+                    <strong><i class="bi bi-exclamation-triangle-fill me-2"></i> Error:</strong> {{ result.error }}
+                </div>
+            {% else %}
+                <div class="custom-card">
+                    <div class="result-header">
+                        <i class="bi bi-lightbulb-fill fs-5"></i> Recommended Alternatives
+                    </div>
+                    <div class="card-body">
+                        {% if result.alternatives %}
+                            <ul class="alt-list">
+                            {% for drug in result.alternatives %}
+                                <li><i class="bi bi-check-circle-fill"></i> {{ drug }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-info-circle fs-2 d-block mb-2 opacity-50"></i>
+                                <p class="mb-0">No alternative drugs found or drug not recognized.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </div>
+
+<script>
+  document.getElementById('alt-form').addEventListener('submit', function() {
+    const btn = document.getElementById('check-btn');
+    const label = document.getElementById('btn-label');
+    const icon = document.getElementById('btn-icon');
+    btn.disabled = true;
+    label.textContent = 'Analyzing…';
+    icon.className = 'bi bi-hourglass-split me-1';
+  });
+</script>
 {% endblock %}

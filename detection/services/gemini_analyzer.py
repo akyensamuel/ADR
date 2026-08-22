@@ -54,12 +54,34 @@ class AnalysisResult:
 
     @property
     def has_results(self) -> bool:
-        return bool(self.drugs_found or self.symptoms_found)
+        return bool(self.drugs_found or self.symptoms_found) or bool(self.error)
 
 
-# ── Prompt ───────────────────────────────────────────────────────────────────
+@dataclass(frozen=True)
+class InteractionCheckResult:
+    is_risky: bool
+    severity: str = ''
+    description: str = ''
+    alternatives: list[str] = field(default_factory=list)
+    error: str = ""
 
-_PROMPT_TEMPLATE = """
+
+@dataclass(frozen=True)
+class SymptomExtractionResult:
+    symptoms: list[str] = field(default_factory=list)
+    raw_text: str = ""
+    error: str = ""
+
+
+@dataclass(frozen=True)
+class SaferAlternativesResult:
+    alternatives: list[str] = field(default_factory=list)
+    error: str = ""
+
+
+# ── Prompts ───────────────────────────────────────────────────────────────────
+
+_PROMPT_UNIFIED = """
 You are a clinical pharmacology assistant specialising in adverse drug reactions (ADRs) and drug-drug interactions (DDIs).
 
 Analyse the following patient clinical description and return a JSON object — nothing else, no markdown fences, just raw JSON.
@@ -84,25 +106,56 @@ Clinical description:
 \"\"\"
 """.strip()
 
-# ── Public API ────────────────────────────────────────────────────────────────
+_PROMPT_INTERACTION = """
+You are a clinical pharmacology assistant. Check for known drug-drug interactions between the following two drugs:
+Drug A: {drug_a}
+Drug B: {drug_b}
 
-def analyze(clinical_text: str) -> AnalysisResult:
-    """
-    Run the full Gemini-powered ADR analysis on *clinical_text*.
+Return a JSON object — nothing else, no markdown fences, just raw JSON.
 
-    Returns an AnalysisResult. If the API key is missing or the call fails,
-    returns an AnalysisResult with a non-empty ``error`` field.
-    """
-    result = AnalysisResult(raw_text=clinical_text.strip())
+The JSON must have exactly these keys:
+- "is_risky": boolean (true if there is a known clinical interaction, false otherwise)
+- "severity": string ("high", "moderate", "low", or "" if no interaction)
+- "description": string (explain the interaction mechanism and risk, or state that none is known)
+- "alternatives": list of strings (if there is an interaction, suggest 2-4 safer alternatives for one of the drugs; otherwise empty list)
 
+Do not include any explanation outside the JSON.
+""".strip()
+
+_PROMPT_SYMPTOMS = """
+You are a clinical pharmacology assistant. Extract all adverse drug reaction symptoms from the following clinical notes.
+
+Return a JSON object — nothing else, no markdown fences, just raw JSON.
+
+The JSON must have exactly this key:
+- "symptoms": list of strings (map the extracted symptoms to standard MedDRA preferred terms where possible. e.g. "headache", "nausea")
+
+Clinical notes:
+\"\"\"
+{clinical_notes}
+\"\"\"
+""".strip()
+
+_PROMPT_ALTERNATIVES = """
+You are a clinical pharmacology assistant. Provide a list of 3-5 safer therapeutic alternatives for the following drug:
+Drug: {drug_name}
+
+Return a JSON object — nothing else, no markdown fences, just raw JSON.
+
+The JSON must have exactly this key:
+- "alternatives": list of strings (the names of the alternative drugs)
+
+Do not include any explanation outside the JSON.
+""".strip()
+
+
+# ── Internal Helpers ──────────────────────────────────────────────────────────
+
+def _call_gemini_json(prompt: str) -> dict | str:
+    """Helper to call Gemini and parse JSON, returning dict on success or string on error."""
     if not _API_KEY:
-        result.error = (
-            "GEMINI_API_KEY is not set. Please add it to your .env file."
-        )
-        return result
-
-    prompt = _PROMPT_TEMPLATE.format(clinical_text=clinical_text.strip())
-
+        return "GEMINI_API_KEY is not set. Please add it to your .env file."
+        
     try:
         client = _get_client()
         response = client.models.generate_content(
@@ -110,32 +163,90 @@ def analyze(clinical_text: str) -> AnalysisResult:
             contents=prompt,
         )
         raw = response.text.strip()
-
-        # Strip markdown fences if the model wraps anyway
+        
         raw = re.sub(r"^```[a-z]*\n?", "", raw)
         raw = re.sub(r"\n?```$", "", raw)
-
-        data = json.loads(raw)
-
-        result.drugs_found = [str(d) for d in data.get("drugs_found", [])]
-        result.symptoms_found = [str(s) for s in data.get("symptoms_found", [])]
-
-        for ixn in data.get("interactions", []):
-            result.interactions.append(
-                DrugInteractionSummary(
-                    drug_a=str(ixn.get("drug_a", "")),
-                    drug_b=str(ixn.get("drug_b", "")),
-                    severity=str(ixn.get("severity", "")).lower(),
-                    description=str(ixn.get("description", "")),
-                )
-            )
-
-        for drug_name, alts in data.get("alternatives", {}).items():
-            result.alternatives[str(drug_name)] = [str(a) for a in alts]
-
+        
+        return json.loads(raw)
     except json.JSONDecodeError as exc:
-        result.error = f"Could not parse Gemini response as JSON: {exc}"
+        return f"Could not parse Gemini response as JSON: {exc}"
     except Exception as exc:  # noqa: BLE001
-        result.error = f"Gemini API error: {exc}"
+        return f"Gemini API error: {exc}"
+
+
+# ── Public API ────────────────────────────────────────────────────────────────
+
+def analyze(clinical_text: str) -> AnalysisResult:
+    """Run the full Gemini-powered ADR analysis on *clinical_text*."""
+    result = AnalysisResult(raw_text=clinical_text.strip())
+    
+    prompt = _PROMPT_UNIFIED.format(clinical_text=clinical_text.strip())
+    data_or_err = _call_gemini_json(prompt)
+    
+    if isinstance(data_or_err, str):
+        result.error = data_or_err
+        return result
+
+    result.drugs_found = [str(d) for d in data_or_err.get("drugs_found", [])]
+    result.symptoms_found = [str(s) for s in data_or_err.get("symptoms_found", [])]
+
+    for ixn in data_or_err.get("interactions", []):
+        result.interactions.append(
+            DrugInteractionSummary(
+                drug_a=str(ixn.get("drug_a", "")),
+                drug_b=str(ixn.get("drug_b", "")),
+                severity=str(ixn.get("severity", "")).lower(),
+                description=str(ixn.get("description", "")),
+            )
+        )
+
+    for drug_name, alts in data_or_err.get("alternatives", {}).items():
+        result.alternatives[str(drug_name)] = [str(a) for a in alts]
 
     return result
+
+
+def check_interaction_pair(drug_a: str, drug_b: str) -> InteractionCheckResult:
+    """Check specifically for an interaction between two drugs using Gemini."""
+    prompt = _PROMPT_INTERACTION.format(drug_a=drug_a.strip(), drug_b=drug_b.strip())
+    data_or_err = _call_gemini_json(prompt)
+    
+    if isinstance(data_or_err, str):
+        return InteractionCheckResult(is_risky=False, error=data_or_err)
+        
+    return InteractionCheckResult(
+        is_risky=bool(data_or_err.get("is_risky", False)),
+        severity=str(data_or_err.get("severity", "")).lower(),
+        description=str(data_or_err.get("description", "")),
+        alternatives=[str(a) for a in data_or_err.get("alternatives", [])]
+    )
+
+
+def extract_symptoms(clinical_notes: str) -> SymptomExtractionResult:
+    """Extract symptoms from text using Gemini."""
+    normalized_text = clinical_notes.strip()
+    
+    prompt = _PROMPT_SYMPTOMS.format(clinical_notes=normalized_text)
+    data_or_err = _call_gemini_json(prompt)
+    
+    if isinstance(data_or_err, str):
+        return SymptomExtractionResult(raw_text=normalized_text, error=data_or_err)
+        
+    return SymptomExtractionResult(
+        symptoms=[str(s) for s in data_or_err.get("symptoms", [])],
+        raw_text=normalized_text
+    )
+
+
+def get_safer_alternatives(drug_name: str) -> SaferAlternativesResult:
+    """Get safer alternatives for a drug using Gemini."""
+    prompt = _PROMPT_ALTERNATIVES.format(drug_name=drug_name.strip())
+    data_or_err = _call_gemini_json(prompt)
+    
+    if isinstance(data_or_err, str):
+        return SaferAlternativesResult(error=data_or_err)
+        
+    return SaferAlternativesResult(
+        alternatives=[str(a) for a in data_or_err.get("alternatives", [])]
+    )
+
